@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Macro</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><span class="brand-mark"><i class="bi bi-mouse2-fill"></i></span><span>Macro<span class="accent">.</span></span></div>
+      <nav class="nav-list" aria-label="Navigasi utama">
+        <button class="nav-link active" data-page="dashboard"><i class="bi bi-grid-1x2-fill"></i>Dashboard</button>
+        <button class="nav-link" data-page="recorder"><i class="bi bi-record-circle"></i>Recorder</button>
+        <button class="nav-link" data-page="autoclicker"><i class="bi bi-hand-index-thumb"></i>Autoclicker</button>
+        <button class="nav-link" data-page="macros"><i class="bi bi-collection-play"></i>Macros</button>
+        <button class="nav-link" data-page="settings"><i class="bi bi-sliders"></i>Settings</button>
+      </nav>
+      <div class="sidebar-footer"><span class="dot"></span> Local </div>
+    </aside>
+
+    <main class="main-panel">
+      <header class="topbar">
+        <div><p class="eyebrow" id="pageEyebrow">OVERVIEW</p><h1 id="pageTitle">Dashboard</h1></div>
+        <div class="state-pill" id="statePill"><span></span><strong id="stateLabel">IDLE</strong></div>
+      </header>
+      <div id="notice" class="notice" role="status" hidden></div>
+
+      <section class="page active" id="dashboard">
+        <div class="hero card"><div><p class="eyebrow">QUICK ACTIONS</p><h2>Siap menjalankan macro Anda.</h2><p class="muted" id="statusMessage">Memuat status…</p></div>
+          <div class="quick-actions"><button class="btn primary" id="quickRecord"><i class="bi bi-record-circle"></i> Record</button><button class="btn secondary" id="quickPlay"><i class="bi bi-play-fill"></i> Play</button><button class="btn danger" id="quickStop"><i class="bi bi-stop-fill"></i> Stop</button></div>
+        </div>
+        <div class="stats-grid">
+          <article class="stat card"><i class="bi bi-lightning-charge"></i><span>Event saat ini</span><strong id="eventCount">0</strong></article>
+          <article class="stat card"><i class="bi bi-clock-history"></i><span>Durasi macro</span><strong id="duration">0.00s</strong></article>
+          <article class="stat card"><i class="bi bi-cursor"></i><span>Posisi mouse</span><strong id="mousePosition">—</strong></article>
+          <article class="stat card"><i class="bi bi-file-earmark-play"></i><span>Macro aktif</span><strong id="activeMacro">Belum ada</strong></article>
+        </div>
+        <div class="card hotkey-card"><div><div class="card-title">Hotkey global</div><p class="muted">Gunakan saat jendela aplikasi tidak aktif. F8 selalu menghentikan aktivitas yang berjalan.</p></div><div class="hotkeys" id="hotkeys"></div></div>
+      </section>
+
+      <section class="page" id="recorder">
+        <div class="section-heading"><div><p class="eyebrow">CAPTURE INPUT</p><h2>Macro recorder</h2><p class="muted">Menyimpan gerakan mouse, klik, scroll, dan tombol keyboard dengan timestamp aktual.</p></div><span class="status-dot" id="recorderState">IDLE</span></div>
+        <div class="card control-card"><div class="button-row"><button class="btn primary" id="recordBtn"><i class="bi bi-record-circle"></i> Mulai record</button><button class="btn warning" id="recordPauseBtn"><i class="bi bi-pause-fill"></i> Jeda</button><button class="btn danger" id="recordStopBtn"><i class="bi bi-stop-fill"></i> Stop</button></div><p class="muted compact">F6: mulai/stop recording · F8: emergency stop</p></div>
+        <div class="card event-card"><div class="card-header"><div><div class="card-title">Event yang direkam</div><p class="muted">Menampilkan 150 event terakhir.</p></div><button class="text-button" id="refreshEvents">Refresh</button></div><pre id="events">Belum ada event</pre></div>
+      </section>
+
+      <section class="page" id="autoclicker">
+        <div class="section-heading"><div><p class="eyebrow">REPEATED CLICKS</p><h2>Autoclicker</h2><p class="muted">Menjalankan klik otomatis dengan timer yang bisa dihentikan segera.</p></div><span class="status-dot" id="autoclickerState">OFF</span></div>
+        <div class="card form-card"><div class="form-grid"><label>Tipe klik<select id="clickButton"><option value="left">Klik kiri</option><option value="right">Klik kanan</option><option value="middle">Klik tengah</option></select></label><label>Interval (ms)<input id="clickInterval" type="number" min="1" value="100"></label><label>Jumlah klik <input id="clickCount" type="number" min="0" value="0"><small>0 = tanpa batas</small></label><label>Randomisasi (ms)<input id="clickJitter" type="number" min="0" value="0"><small>Opsional</small></label></div><div class="button-row"><button class="btn primary" id="autoclickStart"><i class="bi bi-play-fill"></i> Start autoclicker</button><button class="btn danger" id="autoclickStop"><i class="bi bi-stop-fill"></i> Stop</button><span class="muted" id="clickCountStatus">0 klik dilakukan</span></div><p class="muted compact">F9: start/stop autoclicker · F8: emergency stop</p></div>
+      </section>
+
+      <section class="page" id="macros">
+        <div class="section-heading"><div><p class="eyebrow">LIBRARY</p><h2>Macros tersimpan</h2><p class="muted">File disimpan lokal dalam format JSON yang dapat dibaca dan diberi versi.</p></div><button class="btn primary" id="saveBtn"><i class="bi bi-save"></i> Simpan macro saat ini</button></div>
+        <div class="macro-list" id="macroList"><div class="empty-state">Memuat library macro…</div></div>
+      </section>
+
+      <section class="page" id="settings">
+        <div class="section-heading"><div><p class="eyebrow">SETTINGS</p><h2>Pengaturan</h2><p class="muted">Hotkey standar ditampilkan di bawah. Perubahan hotkey kustom belum diterapkan agar listener global tetap stabil.</p></div></div>
+        <div class="card settings-card"><div class="card-title">Playback</div><label>Kecepatan playback <div class="range-row"><input id="speed" type="range" min="0.25" max="3" step="0.25" value="1"><output id="speedValue">1.00×</output></div></label><label>Loop<select id="loop"><option value="1">1 kali</option><option value="5">5 kali</option><option value="10">10 kali</option><option value="0">Tanpa batas</option></select></label></div>
+        <div class="card settings-card"><div class="card-title">Akurasi koordinat</div><p class="muted">Macro menggunakan koordinat absolut virtual desktop. Aplikasi meminta DPI awareness per-monitor pada Windows supaya posisi tetap selaras di layar berskala berbeda.</p></div>
+      </section>
+    </main>
+  </div>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
